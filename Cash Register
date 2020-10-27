@@ -1,0 +1,121 @@
+function checkCashRegister(price, cash, cid) {
+  let change = cash - price;
+  
+  // Count total drawer
+  
+  let totalDrawer = cid
+    .map((subArr) => {
+      return subArr[1];
+    })
+    .reduce((accumulator, num) => {
+      return accumulator + num;
+    });
+  totalDrawer.toFixed(2);
+  
+// Edge cases if total drawer < or equal to change
+
+  if (totalDrawer < change) {
+    return { status: "INSUFFICIENT_FUNDS", change: [] };
+  } else if (totalDrawer === change) {
+    return { status: "CLOSED", change: cid };
+  }
+
+  let cl = cid.length;
+  let available20s = cid[cl - 2][1];
+  let available10s = cid[cl - 3][1];
+  let available5s = cid[cl - 4][1];
+  let available1s = cid[cl - 5][1];
+  let availableQuarters = cid[cl - 6][1];
+  let availableDimes = cid[cl - 7][1];
+  let availableNickels = cid[cl - 8][1];
+  let availablePennies = cid[cl - 9][1];
+
+  // Now go through each denomination and account for when there's not
+  // optimal amount of any particular denomination
+  // probably could have created a func that would take denom multiplier as input to make more DRY -- next time
+
+  let result;
+  let newArr = [];
+  if (change >= 20 && available20s > 0) {
+    if (available20s <= change) {
+      result = available20s;
+      change = change - result;
+    } else {
+      result = Math.floor(change / 20) * 20;
+      change = change - result;
+    }
+    newArr.push(["TWENTY", result]);
+  }
+  if (change >= 10 && available10s > 0) {
+    if (available10s <= change) {
+      result = available10s;
+      change = change - result;
+    } else {
+      result = Math.floor(change / 10) * 10;
+      change = change - result;
+    }
+    newArr.push(["TEN", result]);
+  }
+  if (change >= 5 && available5s > 0) {
+    if (available5s <= change) {
+      result = available5s;
+      change = change - result;
+    } else {
+      result = Math.floor(change / 5) * 5;
+      change = change - result;
+    }
+    newArr.push(["FIVE", result]);
+  }
+  if (change >= 1 && available1s > 0) {
+    if (available1s <= change) {
+      result = available1s;
+      change = change - result;
+    } else {
+      result = Math.floor(change);
+      change = change - result;
+    }
+    newArr.push(["ONE", result]);
+  }
+  if (change >= 0.25 && availableQuarters > 0) {
+    if (availableQuarters <= change) {
+      result = availableQuarters;
+      change = change - result;
+    } else {
+      result = Math.floor(change / 0.25) * 0.25;
+      change = (change - result).toFixed(2);
+    }
+    newArr.push(["QUARTER", result]);
+  }
+  if (change >= 0.1 && availableDimes > 0) {
+    if (availableDimes <= change) {
+      result = availableDimes;
+      change = change - result;
+    } else {
+      result = Math.floor(change / 0.1) * 0.1;
+      change = (change - result).toFixed(2);
+    }
+    newArr.push(["DIME", result]);
+  }
+  if (change >= 0.05 && availableNickels > 0) {
+    if (availableNickels <= change) {
+      result = availableNickels;
+      change = change - result;
+    } else {
+      result = Math.floor(change / 0.05) * 0.05;
+      change = (change - result).toFixed(2);
+    }
+    newArr.push(["NICKEL", result]);
+  }
+  if (change == 0) {
+    return { status: "OPEN", change: newArr };
+  } else if (change > availablePennies) {
+    return { status: "INSUFFICIENT_FUNDS", change: [] };
+  } else {
+    result = parseFloat(change);
+    newArr.push(["PENNY", result]);
+  }
+
+  return { status: "OPEN", change: newArr };
+}
+
+checkCashRegister(19.5, 20, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]);
