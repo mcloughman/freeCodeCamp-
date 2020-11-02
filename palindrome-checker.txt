@@ -1,0 +1,28 @@
+function palindrome(str) {
+
+// use regex to remove punctuation, spaces and symbols
+
+  let newStr = str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+// use helper recursion
+  
+  let result = true;
+  let arr = newStr.split('');
+  console.log(arr);
+  const helper = (helperInput) => {
+    if (helperInput.length <= 1) return result;
+    let a = helperInput.shift();
+    let b = helperInput.pop();
+    if (a === b) {
+      return helper(helperInput);
+    }
+    result = false;
+  }
+  helper(arr);
+  return result;
+  
+}
+
+
+
+console.log(palindrome("_eye"));
